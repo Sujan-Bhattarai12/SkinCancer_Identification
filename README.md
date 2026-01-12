@@ -1,72 +1,116 @@
-# 🩺 Medical Computer Vision: Skin Lesion Classification (HAM10000)
+# 🩺 Deep Learning for Dermatology: Automated Skin Lesion Classification (HAM10000)
 
-## Project Mission
-The goal of this project was **to train a model**, and tackle the unique architectural and statistical challenges of medical imaging.I built a system to classify dermatoscopic images into **7 diagnostic categories**, with a primary focus on **high-stakes detection of Melanoma**.
-
----
-
-## Engineering Challenges
-
-### 1. Data Leakage
-The **HAM10000 dataset** contains multiple images of the same lesion. A naive random split would place different views of the same lesion in both training and validation sets, inflating the reported accuracy.  
-**The Fix:**  
-Implemented a **custom splitting logic based on `lesion_id`** to ensure that the model is tested on **unseen patients**, not just unseen images of known lesions.
+This repository presents a **comparative study and implementation of deep learning architectures** for the automated classification of 7 dermatoscopic skin lesion types. Beyond standard CNNs, this project addresses **real-world medical imaging challenges** including data leakage, severe class imbalance, and the need for interpretability in clinical settings.
 
 ---
 
-### 2. Handling Severe Class Imbalance
-The dataset is heavily dominated by **Melanocytic nevi (nv)**. Without intervention, a model could reach ~67% accuracy by always predicting "nv".  
-**The Fix:**  
-- Moved beyond simple oversampling.  
-- Implemented **Weighted Cross-Entropy Loss**:  
+## 🎯 Project Mission
 
-\[
-W_c = \frac{N}{C \cdot n_c}
-\]  
+Medical AI is **high-stakes**: false negatives in melanoma detection can have life-threatening consequences. This project goes beyond raw accuracy by:
 
-where:
-- \(N\) = total number of samples  
-- \(C\) = total number of classes  
-- \(n_c\) = number of samples in class \(c\)  
+- Prioritizing **rare and high-risk classes** like Melanoma (mel).  
+- Ensuring **patient-level generalization** through leakage-free splitting.  
+- Integrating **explainability tools** to build clinical trust.  
 
-This ensures that gradients prioritize minority classes like **Dermatofibroma** and **Vascular lesions**.
+**Objective:** Classify dermatoscopic images into **7 diagnostic categories** with a focus on both predictive performance and interpretability.
 
 ---
 
-### 3. Medical Interpretability (Explainability)
-In healthcare, **predictions without explanations are not clinically useful**.  
-**The Fix:**  
-Integrated **Grad-CAM**, which produces heatmaps highlighting the areas of the image the CNN focuses on, such as **specific textures or pigment networks**, providing insight into model decisions.
+## 🧠 Engineering & Clinical Challenges
+
+### 1. Patient-Level Data Leakage
+**Problem:** HAM10000 contains multiple images of the same lesion. Random splits allow models to memorize lesions rather than learn disease patterns.  
+
+**Solution:** Custom **lesion_id-based splitting**, ensuring no patient appears in both training and test sets.
 
 ---
-## 🏗️ Technical Architecture
 
-### Baseline: Custom CNN
-- Built a **4-block CNN from scratch** to measure the difficulty floor.  
-- Plateaued at ~70% accuracy, confirming that **skin textures require deeper hierarchical features**.
+### 2. Extreme Class Imbalance (58:1)
+**Problem:** 6,705 Melanocytic nevi (nv) vs. 115 Dermatofibroma (df) samples. A naive model would predict majority classes almost exclusively.  
 
-### The "Winner": ResNet50 + Transfer Learning
-**Two-phase training strategy:**
+**Solution:**  
+- Weighted Cross-Entropy Loss based on **inverse class frequency**.  
+- Targeted data augmentation for minority classes.  
+- Focused evaluation metrics: **Macro F1-score, Class Recall**, especially for high-risk lesions.
 
-1. **Phase 1:** Freeze ImageNet weights, train only the custom head for 10 epochs to stabilize randomly initialized weights.  
-2. **Phase 2:** Unfreeze deeper layers and fine-tune with a **lower learning rate (1e-5)** to adapt filters to dermatoscopic patterns.
 ---
 
-## Performance Benchmarks
+### 3. The Clinical "Black Box" Problem
+**Problem:** Clinicians require visual evidence of model reasoning to trust predictions.  
 
-| Metric                     | Baseline CNN | ResNet50 (Fine-tuned) |
-|-----------------------------|--------------|----------------------|
-| Test Accuracy               | 68.2%        | 83.4%                |
-| Micro-Average AUC           | 0.82         | 0.96                 |
-| Inference Latency           | ~15 ms       | ~28 ms               |
-| Melanoma Recall             | 0.75         | 0.75                 |
-| Top Performing Class (F1)   | nv - 0.91    | nv - 0.91            |
+**Solution:** Integrated **Grad-CAM** (Gradient-weighted Class Activation Mapping) to generate heatmaps, highlighting **textures and pigment networks** that guide the CNN’s decisions.
 
-> **Clinical optimization:** Melanoma recall was prioritized to **reduce false negatives**, critical for patient safety.
 ---
 
-## 🛠️ Tech Stack
-- **Core:** PyTorch 2.0+ (MPS acceleration for Mac)  
-- **Data Processing:** NumPy, Pandas (metadata handling), PIL (image operations)  
-- **Analytics:** Scikit-learn (weighted metrics), Matplotlib/Seaborn  
+## 🏗️ Model Architectures & Training Strategy
+
+### Baseline CNN
+- 4-block custom CNN trained from scratch.  
+- Achieved **~70% accuracy**, serving as a difficulty floor.
+
+### Transfer Learning Models
+Two-phase strategy implemented for **ResNet50** and **EfficientNet-B0**:
+
+**Phase 1: Feature Extraction (Warm-up)**  
+- Freeze ImageNet-pretrained backbone.  
+- Train custom classification head only.  
+- Goal: Stabilize newly added dense layers without disrupting pretrained spatial features.
+
+**Phase 2: Fine-Tuning (Progressive Unfreezing)**  
+- Unfreeze entire network.  
+- Apply **differential learning rates** (10x smaller for backbone).  
+- Goal: Adapt low-level filters to dermatoscopic textures and patterns.
+
 ---
+
+## 📊 Performance Overview
+
+| Model             | Overall Accuracy | Macro Avg F1 | Weighted Avg F1 |
+|------------------|----------------|--------------|----------------|
+| Baseline CNN      | ~70.1%         | 0.32         | 0.68           |
+| ResNet50          | 73.27%         | 0.43         | 0.73           |
+| EfficientNet-B0   | 78.41%         | 0.54         | 0.78           |
+
+**Key Insights:**  
+- **"NV" Dominance:** Both models excel on Melanocytic nevi (nv) due to large support (F1 ~0.89).  
+- **Architecture Edge:** EfficientNet-B0 outperforms ResNet50 on minority classes like Actinic keratoses (akiec), F1 = 0.55 vs. 0.26.  
+- **Data Floor:** Dermatofibroma (df) remains challenging (0% recall), highlighting a limitation of convolutional architectures on extremely rare lesions.
+
+---
+
+## 🩺 Per-Class Performance Comparison
+
+| Class | ResNet50 F1 | EfficientNet-B0 F1 | ResNet50 Recall | EfficientNet-B0 Recall |
+|-------|-------------|-------------------|----------------|-----------------------|
+| akiec  | 0.27        | 0.55              | 0.20           | 0.54                  |
+| bcc    | 0.42        | 0.67              | 0.37           | 0.69                  |
+| bkl    | 0.51        | 0.56              | 0.66           | 0.60                  |
+| df     | 0.00        | 0.00              | 0.00           | 0.00                  |
+| mel    | 0.39        | 0.41              | 0.38           | 0.35                  |
+| nv     | 0.87        | 0.89              | 0.85           | 0.91                  |
+| vasc   | 0.55        | 0.72              | 0.52           | 0.62                  |
+
+> EfficientNet-B0 consistently improves **minority class recognition**, demonstrating the importance of architecture selection in medical datasets.
+
+---
+
+## 🛠️ Technical Stack
+
+- **Framework:** PyTorch 2.0+ (MPS acceleration for Apple Silicon)  
+- **Computer Vision:** Torchvision, PIL, OpenCV  
+- **Data Processing & Analysis:** NumPy, Pandas, Scikit-learn (weighted metrics)  
+- **Visualization:** Matplotlib, Seaborn, Grad-CAM  
+
+---
+
+## 📂 Project Structure
+
+```plaintext
+├── models/                        # Saved model checkpoints (.pth)
+├── README.md                       # Project overview and documentation
+├── data/                           # HAM10000 images & metadata.csv
+│   ├── 01_data_exploration.ipynb   # Data exploration and lesion-ID splitting
+│   ├── 02_data_processing.ipynb   # CNN, ResNet50, EfficientNet-B0 architectures
+│   ├── 03_baseline_model.ipynb     # Baseline model training & Grad-CAM visualizations
+│   └── 04_advanced_models.ipynb    # Advanced model experiments and fine-tuning
+└── requirements.txt 
