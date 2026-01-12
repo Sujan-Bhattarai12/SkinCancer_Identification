@@ -4,7 +4,7 @@ This repository presents a **comparative study and implementation of deep learni
 
 ---
 
-## 🎯 Project Mission
+##  Project Mission
 
 Medical AI is **high-stakes**: false negatives in melanoma detection can have life-threatening consequences. This project goes beyond raw accuracy by:
 
@@ -16,7 +16,7 @@ Medical AI is **high-stakes**: false negatives in melanoma detection can have li
 
 ---
 
-## 🧠 Engineering & Clinical Challenges
+##  Engineering & Clinical Challenges
 
 ### 1. Patient-Level Data Leakage
 **Problem:** HAM10000 contains multiple images of the same lesion. Random splits allow models to memorize lesions rather than learn disease patterns.  
@@ -42,7 +42,7 @@ Medical AI is **high-stakes**: false negatives in melanoma detection can have li
 
 ---
 
-## 🏗️ Model Architectures & Training Strategy
+##  Model Architectures & Training Strategy
 
 ### Baseline CNN
 - 4-block custom CNN trained from scratch.  
@@ -63,7 +63,7 @@ Two-phase strategy implemented for **ResNet50** and **EfficientNet-B0**:
 
 ---
 
-## 📊 Performance Overview
+##  Performance Overview
 
 | Model             | Overall Accuracy | Macro Avg F1 | Weighted Avg F1 |
 |------------------|----------------|--------------|----------------|
@@ -94,7 +94,7 @@ Two-phase strategy implemented for **ResNet50** and **EfficientNet-B0**:
 
 ---
 
-## 🛠️ Technical Stack
+##  Technical Stack
 
 - **Framework:** PyTorch 2.0+ (MPS acceleration for Apple Silicon)  
 - **Computer Vision:** Torchvision, PIL, OpenCV  
@@ -103,7 +103,7 @@ Two-phase strategy implemented for **ResNet50** and **EfficientNet-B0**:
 
 ---
 
-## 📂 Project Structure
+##  Project Structure
 
 ```plaintext
 ├── models/                        # Saved model checkpoints (.pth)
