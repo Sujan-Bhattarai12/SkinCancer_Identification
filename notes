@@ -1,8 +1,19 @@
 # Model Development Summary
 
-1. **Project Standardization:** Unified all scripts under a single root directory (`deep_learning`) to ensure path consistency and reproducibility.
-2. **Architecture Selection:** Implemented **ConvNeXt-Base** using transfer learning—initially freezing the backbone before performing gradual fine-tuning for domain adaptation.
-3. **Class Imbalance Mitigation:** Addressed significant bias toward majority classes by implementing **Focal Loss**, class weighting, and robust data augmentation.
-4. **Training Optimization:** Moved beyond baseline models (EfficientNet/ResNet) that showed artificial accuracy spikes to a model with a healthy, gradual learning curve.
-5. **Generalization & Robustness:** Improved model focus on skin lesions rather than background features through specialized normalization and color jittering.
-6. **Checkpointing & Deployment:** Established a systematic saving process for the best-performing models, including metadata for immediate inference readiness.
+1. **Standardized Project Structure**  
+   Moved all scripts into a single `deep_learning` folder so paths are consistent and everything runs smoothly.
+
+2. **Model Choice**  
+   Used **ConvNeXt-Base** with transfer learning. Started by freezing the backbone, then fine-tuned gradually to adapt to skin lesion images.
+
+3. **Handling Class Imbalance**  
+   Majority classes were dominating, so we added **Focal Loss**, class weights, and heavy data augmentation.
+
+4. **Better Training Behavior**  
+   Avoided baseline models (EfficientNet/ResNet) that gave misleading accuracy spikes. The new model learns steadily and reliably.
+
+5. **Improved Generalization**  
+   Focused the model on the lesions instead of background clutter using color jittering and normalization tweaks.
+
+6. **Checkpointing & Deployment**  
+   Saved the best models systematically, including metadata, so they’re ready for inference right away.
