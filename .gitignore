@@ -1,0 +1,22 @@
+# Python-related ignores
+__pycache__/
+*.pyc
+*.pyo
+.DS_Store
+venv/
+.env/
+data/
+artifacts/
+trained_model_file/
+models/
+*.pt
+*.pth
+*.ckpt
+*.h5
+*.onnx
+runs/
+logs/
+wandb/
+.ipynb_checkpoints/
+allfiles.txt
+gradio_app/
