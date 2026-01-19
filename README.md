@@ -11,6 +11,13 @@ Medical AI is **high-stakes**: false negatives in melanoma detection can have li
 - Ensuring **patient-level generalization** through leakage-free splitting.  
 
 **Objective:** Classify dermatoscopic images into **7 diagnostic categories** with a focus on both predictive performance.
+- AKIEC: Actinic keratoses and intraepithelial carcinoma / Bowen's disease
+- BCC: Basal cell carcinoma
+- BKL: Benign keratosis-like lesions (solar lentigines / seborrheic keratoses and lichen-planus like keratoses)
+- DF: Dermatofibroma
+- MEL: Melanoma
+- NV: Melanocytic nevi
+- VASC: Vascular lesions (angiomas, angiokeratomas, pyogenic granulomas, hemorrhage)
 
 **Model**: Implemented ConvNeXt-Base architecture with two-phase training: 25 epochs of head-only training with frozen backbone, followed by 10 epochs of fine-tuning with the last 3 layers unfrozen. Engineered Focal Loss (α=1, γ=2) to mitigate class imbalance in the HAM10000 dataset. Applied data augmentation including random horizontal/vertical flips, ±20° rotation, and color jittering (brightness, contrast, saturation, hue ±0.1-0.2). Optimized using AdamW with 1e-2 weight decay and adaptive learning rate scheduling (1e-3 during phase 1, 1e-4 during phase 2). Deployed the model via Gradio web application for real-time inference on skin lesion images.
 
