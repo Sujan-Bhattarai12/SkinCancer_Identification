@@ -1,6 +1,9 @@
 # Deep Learning for Dermatology: Automated Skin Lesion Classification
 This repository presents a comparative study and implementation of deep learning architectures for the classification of 7 dermatoscopic skin lesion types. Beyond standard CNNs, this project addresses real-world medical imaging challenges including data leakage, severe class imbalance, and the need for interpretability in clinical settings.
 
+[Visit App](https://huggingface.co/spaces/SujanBhattarai/DermAI-Pro)
+
+
 ##  Project Mission
 Medical AI is **high-stakes**: false negatives in melanoma detection can have life-threatening consequences. This project goes beyond raw accuracy by:
 
